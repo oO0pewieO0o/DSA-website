@@ -46,6 +46,63 @@
             line-height: 1.6;
             transition: background-color 0.3s, color 0.3s;
         }
+        .control-btn:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* Message Box */
+        .message-box {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            animation: slideIn 0.3s ease-out;
+            max-width: 400px;
+        }
+
+        .message-box.error {
+            background-color: #ef4444;
+            color: white;
+        }
+
+        .message-box.success {
+            background-color: #10b981;
+            color: white;
+        }
+
+        .message-box.warning {
+            background-color: #f59e0b;
+            color: white;
+        }
+
+        .message-box.info {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .message-box i {
+            font-size: 1.2rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Footer */
 
         .container {
             max-width: 1200px;
@@ -727,7 +784,7 @@ print(stack.peek()) <span class="code-comment"># Output: 20</span></code></pre>
                 </div>
                 
                 <div class="visualization">
-                    <h3 class="visualization-title">Stack Visualization</h3>
+                    <h3 class="visualization-title">Stack Visualization (Max Size: 5)</h3>
                     <div class="array-visual" id="stackVisual" style="flex-direction: column-reverse;">
                         <!-- Stack elements will be added here -->
                     </div>
@@ -1662,6 +1719,7 @@ def merge(left, right):
             const stackVisual = document.getElementById('stackVisual');
             
             let stackData = [10, 20, 30];
+            const STACK_MAX_SIZE = 5;
             
             function updateStackVisual() {
                 stackVisual.innerHTML = '';
@@ -1674,24 +1732,51 @@ def merge(left, right):
             }
             
             stackPushBtn.addEventListener('click', () => {
-                const value = stackValueInput.value;
-                if (value) {
-                    stackData.push(parseInt(value));
-                    updateStackVisual();
-                    stackOutput.textContent = `Pushed ${value} to stack`;
-                    stackValueInput.value = '';
-                }
-            });
+    const value = stackValueInput.value;
+    if (value) {
+        if (stackData.length >= STACK_MAX_SIZE) {
+            stackOutput.textContent = `Stack is full! Maximum size is ${STACK_MAX_SIZE}`;
+            stackOutput.style.color = '#ef4444';
+        } else {
+            stackData.push(parseInt(value));
+            updateStackVisual();
+            stackOutput.textContent = `Pushed ${value} to stack (${stackData.length}/${STACK_MAX_SIZE})`;
+            stackOutput.style.color = 'var(--text)';
+            stackValueInput.value = '';
+        }
+    }
+});
+stackPopBtn.addEventListener('click', () => {
+    if (stackData.length > 0) {
+        const value = stackData.pop();
+        updateStackVisual();
+        showMessage(`Popped ${value} from stack`, 'success');
+        stackOutput.textContent = `Popped ${value} from stack (${stackData.length}/${STACK_MAX_SIZE})`;
+        stackOutput.style.color = 'var(--text)';
+    } else {
+        showMessage('Stack Underflow! Stack is empty', 'error');
+        stackOutput.textContent = 'Stack is empty';
+        stackOutput.style.color = '#ef4444';
+    }
+});
+          stackPeekBtn.addEventListener('click', () => {
+    if (stackData.length > 0) {
+        const value = stackData[stackData.length - 1];
+        stackOutput.textContent = `Top element is ${value} (${stackData.length}/${STACK_MAX_SIZE})`;
+        stackOutput.style.color = 'var(--text)';
+        
+        // Highlight the top element
+        const elements = stackVisual.querySelectorAll('.array-element');
+        if (elements.length > 0) {
+            elements.forEach(el => el.classList.remove('active'));
+            elements[elements.length - 1].classList.add('active');
+        }
+    } else {
+        stackOutput.textContent = 'Stack is empty';
+        stackOutput.style.color = '#ef4444';
+    }
+});
             
-            stackPopBtn.addEventListener('click', () => {
-                if (stackData.length > 0) {
-                    const value = stackData.pop();
-                    updateStackVisual();
-                    stackOutput.textContent = `Popped ${value} from stack`;
-                } else {
-                    stackOutput.textContent = 'Stack is empty';
-                }
-            });
             
             stackPeekBtn.addEventListener('click', () => {
                 if (stackData.length > 0) {
